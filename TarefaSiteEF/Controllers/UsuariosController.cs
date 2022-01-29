@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TarefaSiteEF.Data;
 using Tarefas.Dominio.Models;
+using TarefaSiteEF.ViewModels;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace TarefaSiteEF.Controllers
 {
@@ -19,135 +23,136 @@ namespace TarefaSiteEF.Controllers
             _context = context;
         }
 
-        // GET: Usuarios
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Usuario.ToListAsync());
-        }
-
-        // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.Email == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Create
-        public IActionResult Create()
+        
+        public IActionResult Index()
         {
             return View();
         }
 
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Email,Nome,Senha")] Usuario usuario)
+        public async Task<IActionResult>Login(LoginViewModel loginViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if(this.ModelState.IsValid)
+                {
+                    Usuario usuario = await _context.Usuario
+                        .FirstOrDefaultAsync(m => m.Email == loginViewModel.Email);
+                    
+                    if(usuario == null || usuario.Senha != loginViewModel.Senha)
+                    {
+                        ViewBag.ExisteErro = true;
+                        this.ModelState.AddModelError("usuario_senha_invalido", "Usuário ou senha inválidos");
+                        return View(loginViewModel);
+                    }
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Email, usuario.Email),
+                        new Claim("FullName", usuario.Nome),
+                        new Claim(ClaimTypes.Role, "Usuario"),
+                    };
+
+                    var claimsIdentity = new ClaimsIdentity(
+                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    var authProperties = new AuthenticationProperties
+                    {
+                        ExpiresUtc = DateTimeOffset.Now.AddMinutes(10),
+                        IssuedUtc = DateTime.Now,
+                    };
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+
+                    return RedirectToAction("Index", "Tarefas");
+                }
+                else
+                {
+                    ViewBag.ExisteErro = true;
+                }
+                return View(loginViewModel);
             }
-            return View(usuario);
+            catch(Exception e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
+        }
+        
+        [HttpGet]
+        public IActionResult Nova()
+        {
+            return View();
         }
 
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuario.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Email,Nome,Senha")] Usuario usuario)
+        public async Task<ActionResult> Nova(NovoUsuarioViewModel novoUsuarioViewModel)
         {
-            if (id != usuario.Email)
+            try
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if(this.ModelState.IsValid)
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    if(novoUsuarioViewModel.Senha != novoUsuarioViewModel.ConfirmarSenha)
+                    {
+                        ViewBag.ExisteErro = true;
+                        this.ModelState.AddModelError("senha_diferente_confirma_senha", "Senha e confirmar senha devem ser iguais");
+                    }
+
+                    Usuario usuario = await _context.Usuario
+                        .FirstOrDefaultAsync(m => m.Email == novoUsuarioViewModel.Email);
+
+                    if(usuario != null)
+                    {
+                        ViewBag.ExisteErro = true;
+                        this.ModelState.AddModelError("usuario_Existente", "Email já existente");
+                        return View(novoUsuarioViewModel);
+                    }
+
+                    Usuario novoUsuario = new Usuario(novoUsuarioViewModel.Nome, novoUsuarioViewModel.Email, novoUsuarioViewModel.Senha);
+                    _context.Add(novoUsuario);
+                    _context.SaveChanges();
+                    return RedirectToAction("Login");
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!UsuarioExists(usuario.Email))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ViewBag.ExisteErro = true;
                 }
-                return RedirectToAction(nameof(Index));
+                return View(novoUsuarioViewModel);
             }
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
+            catch(Exception e)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
+        }
 
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.Email == id);
-            if (usuario == null)
+        public async Task<IActionResult>Logout()
+        {
+            try
             {
-                return NotFound();
+                await HttpContext.SignOutAsync();
+                return RedirectToAction("Index", "Home");
             }
-
-            return View(usuario);
+            catch(Exception e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
         }
-
-        // POST: Usuarios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        
+        public IActionResult Error(string message)
         {
-            var usuario = await _context.Usuario.FindAsync(id);
-            _context.Usuario.Remove(usuario);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsuarioExists(string id)
-        {
-            return _context.Usuario.Any(e => e.Email == id);
+            var viewModel = new ErrorViewModel
+            {
+                Message = message
+            };
+            return View(viewModel);
         }
     }
 }
