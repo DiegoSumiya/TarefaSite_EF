@@ -37,11 +37,14 @@ namespace TarefaSiteEF
                 });
 
             services.AddScoped<IUserContext, UserContext>();
+            services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
 
             services.AddHttpContextAccessor();
 
             services.AddDbContext<TarefaSiteEFContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("TarefaSiteEFContext")));
+                    options.UseSqlServer(Configuration.GetConnectionString("TarefaSiteEFContext"), builder =>
+                        builder.MigrationsAssembly("TarefaSiteEF")));
+
             
 
         }   

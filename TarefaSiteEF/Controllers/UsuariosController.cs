@@ -11,16 +11,19 @@ using TarefaSiteEF.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Tarefas.Dominio.Repositorio;
 
 namespace TarefaSiteEF.Controllers
 {
     public class UsuariosController : Controller
     {
         private readonly TarefaSiteEFContext _context;
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
 
-        public UsuariosController(TarefaSiteEFContext context)
+        public UsuariosController(TarefaSiteEFContext context, IUsuarioRepositorio usuarioRepositorio)
         {
             _context = context;
+            _usuarioRepositorio = usuarioRepositorio;
         }
 
         
@@ -42,8 +45,8 @@ namespace TarefaSiteEF.Controllers
             {
                 if(this.ModelState.IsValid)
                 {
-                    Usuario usuario = await _context.Usuario
-                        .FirstOrDefaultAsync(m => m.Email == loginViewModel.Email);
+                    Usuario usuario = _usuarioRepositorio.Buscar(loginViewModel.Email);
+                        
                     
                     if(usuario == null || usuario.Senha != loginViewModel.Senha)
                     {
@@ -117,8 +120,7 @@ namespace TarefaSiteEF.Controllers
                     }
 
                     Usuario novoUsuario = new Usuario(novoUsuarioViewModel.Nome, novoUsuarioViewModel.Email, novoUsuarioViewModel.Senha);
-                    _context.Add(novoUsuario);
-                    _context.SaveChanges();
+                    _usuarioRepositorio.Inserir(novoUsuario);
                     return RedirectToAction("Login");
                 }
                 else

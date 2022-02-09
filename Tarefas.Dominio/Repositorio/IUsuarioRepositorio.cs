@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tarefas.Dominio.Models;
 
 namespace Tarefas.Dominio.Repositorio
 {
     public interface IUsuarioRepositorio
     {
-        Usuario Buscar(string email);
-        List<Usuario> Buscar();
-        void Inserir(Usuario usuario);
+        public Usuario Buscar(string email);
+        public void Inserir(Usuario usuario);
+        public List<Usuario> Buscar();
+        
 
     }
 }

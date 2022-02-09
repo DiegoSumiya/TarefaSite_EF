@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Tarefas.Infra\Tarefas.Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Imagens\" />
+  </ItemGroup>
+
 </Project>
