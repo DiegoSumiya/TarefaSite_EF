@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tarefas.Dominio.Models
 {
@@ -9,6 +10,7 @@ namespace Tarefas.Dominio.Models
         public string Nome{ get; set; }
        
         public string Senha { get; set; }
+        public List<Tarefa> Tarefas { get; set; }
 
         public Usuario(string email, string nome,  string senha)
         {

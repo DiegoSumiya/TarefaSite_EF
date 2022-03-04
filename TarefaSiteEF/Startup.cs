@@ -38,6 +38,7 @@ namespace TarefaSiteEF
 
             services.AddScoped<IUserContext, UserContext>();
             services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+            
 
             services.AddHttpContextAccessor();
 

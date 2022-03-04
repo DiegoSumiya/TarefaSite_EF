@@ -10,6 +10,7 @@ namespace Tarefas.Dominio.Models
     {
         public int Id { get; set; }
         public string Descricao { get; set; }
+        public Tarefa Tarefa { get; set; }
 
         public Categoria(int id, string descricao)
         {

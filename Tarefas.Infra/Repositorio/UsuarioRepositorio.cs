@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tarefas.Dominio.Models;
 using TarefaSiteEF.Data;
-using Microsoft.EntityFrameworkCore;
 using Tarefas.Dominio.Repositorio;
 
 namespace Tarefas.Infra.Repositorio

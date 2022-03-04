@@ -6,6 +6,6 @@ namespace Tarefas.Dominio.Repositorio
 {
     public interface ICategoriaRepositorio
     {
-        Task<List<Categoria>> BuscarAsync();
+        public List<Categoria> Buscar();
     }
 }

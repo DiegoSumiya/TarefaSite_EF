@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Tarefas.Dominio.Models;
 
 namespace TarefaSiteEF.Data
@@ -14,6 +10,10 @@ namespace TarefaSiteEF.Data
         {
         }
 
-        public DbSet<Tarefas.Dominio.Models.Usuario> Usuario { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<Tarefa> Tarefa { get; set; }
+        public DbSet<Categoria> Categoria { get; set; }
     }
 }
+
+
