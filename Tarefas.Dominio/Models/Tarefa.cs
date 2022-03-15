@@ -18,6 +18,7 @@ namespace Tarefas.Dominio.Models
         public Tarefa(int id, string descricao, DateTime data, bool notificacao, int idCategoria, Usuario usuario)
         {
             Id = id;
+            Descricao = descricao;
             Data = data;
             Notificacao = notificacao;
             IdCategoria = idCategoria;

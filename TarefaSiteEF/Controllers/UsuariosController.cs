@@ -119,7 +119,7 @@ namespace TarefaSiteEF.Controllers
                         return View(novoUsuarioViewModel);
                     }
 
-                    Usuario novoUsuario = new Usuario(novoUsuarioViewModel.Nome, novoUsuarioViewModel.Email, novoUsuarioViewModel.Senha);
+                    Usuario novoUsuario = new Usuario(novoUsuarioViewModel.Email, novoUsuarioViewModel.Nome,  novoUsuarioViewModel.Senha);
                     _usuarioRepositorio.Inserir(novoUsuario);
                     return RedirectToAction("Login");
                 }

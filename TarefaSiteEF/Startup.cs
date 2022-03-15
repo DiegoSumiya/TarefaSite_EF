@@ -38,6 +38,8 @@ namespace TarefaSiteEF
 
             services.AddScoped<IUserContext, UserContext>();
             services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+            services.AddScoped<ITarefaRepositorio, TarefaRepositorio>();
+            services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
             
 
             services.AddHttpContextAccessor();
@@ -67,6 +69,8 @@ namespace TarefaSiteEF
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseStaticFiles();
 
             app.UseAuthentication();
             
