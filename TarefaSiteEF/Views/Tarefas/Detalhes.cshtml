@@ -21,8 +21,8 @@
     </div>
     
     <div class="mb-3">
-        @Html.Label("IdCategoria", "Categoria", new { @class = "form-label"})
-        @Html.DropDownListFor(m => m.IdCategoria, Model.Categorias, "Selecione", new { @class = "form-select", disable = true})
+        @Html.LabelFor(m => m.IdCategoria, "Categoria", new { @class = "form-label"})
+        @Html.DropDownListFor(m => m.IdCategoria, Model.Categorias, null, new { @class = "form-select", disabled = true })
     </div>
 
     <div class="mb-3">
@@ -36,7 +36,7 @@
     </div>
 
     <div class="mb-3">
-        @Html.CheckBoxFor(m => m.Notificacao, new { @class = "form-check-input", disable = true })
+        @Html.CheckBoxFor(m => m.Notificacao, new { @class = "form-check-input", disabled = true })
         @Html.LabelFor(m => m.Notificacao, new { @class = "form-check-label"})
     </div>
 

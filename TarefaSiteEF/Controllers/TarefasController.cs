@@ -53,7 +53,7 @@ namespace TarefaSiteEF.Controllers
                     {
                         if(categoria.Id == tarefa.IdCategoria)
                         {
-                            tarefaViewModel.Descricao = categoria.Descricao;
+                            tarefaViewModel.Categoria = categoria.Descricao;
                         }
                     }
                     tarefasViewModels.Add(tarefaViewModel);
